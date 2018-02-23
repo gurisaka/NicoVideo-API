@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
 '''
- -----------------------------------------------------------------------------------
-|Copyright (c) 2016 http://www.guri-tech.com 										|
-|Twitter: @GuriTech 																|
-|Released under the MIT license  													|
- -----------------------------------------------------------------------------------
+ --------------------------------------------
+|Copyright (c) 2016 http://www.guri-tech.com |
+|Twitter: @GuriTech                          |
+|Released under the MIT license              |
+ --------------------------------------------
  '''
 
 import requests
@@ -19,6 +19,17 @@ class NicoVideo_API:
 		self.__session = requests.Session()
 		self.__api_token = ""
 
+	'''Cookie'''
+	#ユーザーアカウントCookieをログインして設定する。
+	def set_cookie(self,mailadd,password):
+		page_url = "https://account.nicovideo.jp/api/v1/login?show_button_twitter=1&site=niconico&show_button_facebook=1&next_url="
+		params = {"mail_tel":mailadd,
+				"password":password}
+		r = self.__session.post(page_url,params=params)
+
+
+	'''Video Info'''
+	#動画の基本情報を取得
 	def get_video_info(self,video_id):
 		url = "http://ext.nicovideo.jp/api/getthumbinfo/" + video_id
 		r = requests.get(url)
@@ -36,33 +47,12 @@ class NicoVideo_API:
 				result[e.tag].append(e.text)
 		return result
 
-	def get_video_comments(self,video_id):
-		pass
-
+	#動画ファイルの元URLを取得
 	def get_video_original_url(self,video_id):
 		url = "http://www.nicovideo.jp/api/getflv?v="+video_id
 		r = self.__session.get(url)
 		print(urllib.parse.unquote(r.text.split("&")[2].replace("url=","")))
 
-	def view_video(self,video_id):
-		self.__session.get("http://www.nicovideo.jp/watch/"+video_id)
-
-	def set_cookie(self,mailadd,password):
-		page_url = "https://account.nicovideo.jp/api/v1/login?show_button_twitter=1&site=niconico&show_button_facebook=1&next_url="
-		params = {"mail_tel":mailadd,
-				"password":password}
-		r = self.__session.post(page_url,params=params)
-
-	#Snapshot検索APIを実行する(実装後回し)
-	def snapshot_search(self,search_query):
-		end_point = "http://api.search.nicovideo.jp/api/v2/snapshot/video/contents/search"
-		return requests.post(end_point,json = search_query) 
-
-	#Snapshot検索APIの結果更新日時を取得する
-	def get_last_renovation_time(self):
-		return requests.get("http://api.search.nicovideo.jp/api/v2/snapshot/version")
-
-	'''About Comment Information'''
 	#動画内のコメント情報を取得する(修正中)
 	def get_comment_information(self,res_from = 10):
 		try:
@@ -76,6 +66,26 @@ class NicoVideo_API:
 			return -1
 		return xmltodict.parse(comments)["packet"]
 
+
+	'''User Actions'''
+	#動画の視聴を行う
+	def view_video(self,video_id):
+		self.__session.get("http://www.nicovideo.jp/watch/"+video_id)
+
+
+	'''SnapShot API'''
+	#Snapshot検索APIを実行する(実装後回し)
+	def snapshot_search(self,search_query):
+		end_point = "http://api.search.nicovideo.jp/api/v2/snapshot/video/contents/search"
+		return requests.post(end_point,json = search_query) 
+
+	#Snapshot検索APIの結果更新日時を取得する
+	def get_last_renovation_time(self):
+		return requests.get("http://api.search.nicovideo.jp/api/v2/snapshot/version")
+
+
+	'''Old Actions'''
+	'''
 	#仕様が変わっため使用不可
 	def get_history_api_token(self):
 		r = self.__session.get("http://www.nicovideo.jp/my/history")
@@ -107,3 +117,4 @@ class NicoVideo_API:
 		}
 		
 		self.__session.post(page_url,params=params)
+	'''
