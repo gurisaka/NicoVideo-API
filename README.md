@@ -1,4 +1,5 @@
 ◆Python3 ニコニコ動画APIラッパー
+
 Usage:
 	api = NicoVideo_API()
 	api.get_video_info("smxxxxxx")
